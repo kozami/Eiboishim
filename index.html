@@ -1,419 +1,547 @@
-125418<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Eibo — Happy Birthday</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<title>Happy Birthday Eibo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#09090f;
-  --bg2:#0f0f1a;
-  --gold:#c9a84c;
-  --gold2:#e8c96e;
-  --line:rgba(255,255,255,.07);
-  --muted:rgba(255,255,255,.38);
-  --body:rgba(255,255,255,.72);
-  --white:#fff;
-}
-html{scroll-behavior:smooth;font-size:16px;}
-body{background:var(--bg);color:var(--body);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+:root{--gold:#D4AF37;--gold2:#FFD700;--dark:#080810;--dark2:#0c0c1e;--dark3:#111128;--accent:#FF6B35;--muted:rgba(255,255,255,.4);--text:rgba(255,255,255,.85);}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden;}
 
-/* CANVAS */
-#fw{position:fixed;inset:0;pointer-events:none;z-index:9999;}
+/* grain */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:.35;animation:grain .4s steps(2) infinite;}
+@keyframes grain{0%,100%{transform:translate(0,0)}25%{transform:translate(-2%,-1%)}50%{transform:translate(1%,2%)}75%{transform:translate(-1%,1%)}}}
 
-/* NOISE */
-body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5;}
+#fwCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9997;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.6rem 3rem;display:flex;align-items:center;justify-content:space-between;}
-nav::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(9,9,15,.85),transparent);backdrop-filter:blur(0);pointer-events:none;}
-.nav-logo{font-family:'DM Serif Display',serif;font-size:1.05rem;letter-spacing:.05em;color:var(--gold);position:relative;z-index:1;}
-.nav-links{display:flex;gap:2.2rem;position:relative;z-index:1;}
-.nav-links a{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s;}
-.nav-links a:hover{color:var(--white);}
-@media(max-width:600px){.nav-links{display:none;}}
+/* side nav */
+#snav{position:fixed;right:1.4rem;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:.6rem;}
+.nd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:.3s;}
+.nd.on,.nd:hover{background:var(--gold);transform:scale(1.5);}
 
 /* ── HERO ── */
-#hero{position:relative;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:8vh;overflow:hidden;}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 60%,rgba(201,168,76,.09) 0%,transparent 65%);}
-.hero-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black,transparent);}
+#hero{position:relative;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;}
+#sfld{position:absolute;inset:0;pointer-events:none;}
+.st{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) infinite alternate;}
+@keyframes tw{0%{opacity:.08}100%{opacity:.9}}
 
-.hero-tag{font-size:.72rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);opacity:0;animation:fup .9s .4s cubic-bezier(.22,1,.36,1) forwards;}
-.hero-name{font-family:'DM Serif Display',serif;font-size:clamp(5.5rem,22vw,16rem);line-height:.88;letter-spacing:-.02em;color:var(--white);opacity:0;animation:fup 1.2s .7s cubic-bezier(.22,1,.36,1) forwards;position:relative;z-index:1;}
-.hero-name span{background:linear-gradient(135deg,#c9a84c 0%,#f0d98a 45%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.hero-sub{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(.95rem,2vw,1.3rem);color:var(--muted);margin-top:1rem;opacity:0;animation:fup .8s 1.4s cubic-bezier(.22,1,.36,1) forwards;letter-spacing:.04em;}
-.hero-scroll{position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;animation:fup .8s 2.2s both;}
-.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollpulse 2s 2.8s infinite;}
-@keyframes fup{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-@keyframes scrollpulse{0%,100%{transform:scaleY(1);opacity:.5}50%{transform:scaleY(1.3);opacity:1}}
+/* film strip top */
+.fstrip{position:absolute;top:0;left:0;right:0;height:52px;background:#050510;display:flex;align-items:center;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.05);}
+.fstrip::before{content:'';position:absolute;inset:8px 0;background:repeating-linear-gradient(90deg,transparent 0,transparent 24px,rgba(255,255,255,.06) 24px,rgba(255,255,255,.06) 28px);}
+.fhole{width:16px;height:26px;border-radius:3px;background:rgba(255,255,255,.06);flex-shrink:0;margin:0 8px;}
 
-/* ── SHARED ── */
-.section{position:relative;z-index:1;padding:clamp(5rem,10vw,9rem) clamp(1.5rem,8vw,8rem);}
-.section-inner{max-width:1100px;margin:0 auto;}
-.label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:block;}
-.heading{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4.5vw,3.4rem);color:var(--white);line-height:1.1;letter-spacing:-.02em;}
-.heading em{font-style:italic;color:var(--gold2);}
+.eyebrow{font-size:.72rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);opacity:0;animation:up .8s .5s forwards;}
+.hname{font-family:'Bebas Neue',sans-serif;font-size:clamp(5.5rem,20vw,15rem);line-height:.92;background:linear-gradient(135deg,#D4AF37 0%,#FFD700 25%,#FF6B35 55%,#FF6B9D 78%,#9B59B6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:blast 1.4s .8s cubic-bezier(.16,1,.3,1) forwards;}
+.hsub{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(.95rem,2.5vw,1.4rem);color:rgba(255,255,255,.65);letter-spacing:.12em;margin-top:.5rem;opacity:0;animation:up .8s 1.8s forwards;}
+.hscroll{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--muted);animation:bob 2s 3s infinite;opacity:0;animation-fill-mode:forwards;}
+@keyframes blast{0%{opacity:0;transform:scale(.45) translateY(60px);filter:blur(18px)}100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}}
+@keyframes up{0%{opacity:0;transform:translateY(24px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
 
-.rule{width:100%;height:1px;background:var(--line);margin:0;}
+/* ── shared section styles ── */
+.sec{position:relative;padding:6rem 2rem;}
+.sec-label{font-size:.7rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem;}
+.sec-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,2.9rem);font-weight:900;color:#fff;}
+.sec-sub{color:var(--muted);font-size:.88rem;margin-top:.5rem;}
+.sec-head{text-align:center;margin-bottom:3.5rem;}
+.divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:.8rem auto 0;}
 
-/* REVEAL */
-.rv{opacity:0;transform:translateY(28px);transition:opacity .85s ease,transform .85s ease;}
-.rv.in{opacity:1;transform:none;}
-.rv[data-d="1"]{transition-delay:.1s}
-.rv[data-d="2"]{transition-delay:.2s}
-.rv[data-d="3"]{transition-delay:.3s}
-.rv[data-d="4"]{transition-delay:.4s}
-.rv[data-d="5"]{transition-delay:.5s}
+/* reveal */
+.rv{opacity:0;transform:translateY(35px);transition:opacity .8s,transform .8s;}
+.rv.vis{opacity:1;transform:translateY(0);}
 
+/* ── COUNTDOWN ── */
+#cdown{background:var(--dark2);text-align:center;}
+#cdown::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-bottom:5rem;}
+#cdown::after{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-top:5rem;}
+#timer{display:flex;align-items:flex-end;justify-content:center;gap:1rem;flex-wrap:wrap;}
+.tb{text-align:center;}
+.tn{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,10vw,6rem);line-height:1;background:linear-gradient(180deg,#fff 40%,rgba(255,255,255,.3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tc{font-family:'Bebas Neue',sans-serif;font-size:5rem;line-height:1.1;color:var(--gold);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.tl{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);}
+#bdayblast{display:none;padding:1rem;}
+#bdayblast .bbt{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,8vw,5rem);background:linear-gradient(135deg,var(--gold),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:pls .9s infinite alternate;}
+@keyframes pls{from{transform:scale(1)}to{transform:scale(1.06)}}
 
-  
-#sec-story{background:var(--bg);}
-.tl{margin-top:4rem;display:flex;flex-direction:column;gap:0;}
-.tl-item{display:grid;grid-template-columns:120px 1fr;gap:2.5rem;padding:2.5rem 0;border-top:1px solid var(--line);align-items:start;}
-.tl-year{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05rem;color:var(--gold);padding-top:.15rem;}
-.tl-body{}
-.tl-title{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--white);margin-bottom:.7rem;letter-spacing:-.02em;}
-.tl-text{font-size:.88rem;line-height:1.9;color:var(--muted);}
-@media(max-width:500px){.tl-item{grid-template-columns:1fr;gap:.5rem;}.tl-year{font-size:.85rem;}}
+/* ── TIMELINE ── */
+#tl-sec{background:var(--dark);}
+.tlwrap{max-width:680px;margin:0 auto;position:relative;padding-left:2.2rem;}
+.tlwrap::before{content:'';position:absolute;left:.6rem;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--gold) 15%,var(--gold) 85%,transparent);}
+.tli{position:relative;margin-bottom:3.5rem;opacity:0;transform:translateX(-28px);transition:opacity .7s,transform .7s;}
+.tli.vis{opacity:1;transform:translateX(0);}
+.tli-dot{position:absolute;left:-2.15rem;top:.5rem;width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px rgba(212,175,55,.7);}
+.tli-yr{font-size:.68rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.35rem;}
+.tli-ico{font-size:1.6rem;margin-bottom:.4rem;}
+.tli-t{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:.5rem;}
+.tli-d{font-size:.88rem;line-height:1.8;color:var(--muted);}
 
-/* ── STATS ── */
-#sec-stats{background:var(--bg2);}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;margin-top:3.5rem;border:1px solid var(--line);}
-.stat{padding:2.5rem 2rem;border-right:1px solid var(--line);position:relative;overflow:hidden;}
-.stat:last-child{border-right:none;}
-.stat-num{font-family:'DM Serif Display',serif;font-size:3.2rem;color:var(--white);line-height:1;}
-.stat-num span{font-size:2rem;color:var(--gold);}
-.stat-label{font-size:.75rem;line-height:1.6;color:var(--muted);margin-top:.6rem;max-width:140px;}
-@media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr;}.stat{border-right:none;border-bottom:1px solid var(--line);}}
+/* ── QUALITY CARDS ── */
+#qsec{background:var(--dark2);}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.4rem;max-width:980px;margin:0 auto;}
+.qc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:1.8rem 1.6rem;transition:.4s;cursor:default;position:relative;overflow:hidden;}
+.qc::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(212,175,55,.14) 0%,transparent 65%);opacity:0;transition:.3s;pointer-events:none;}
+.qc:hover::after{opacity:1;}
+.qc:hover{border-color:rgba(212,175,55,.28);transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,.4);}
+.qi{font-size:2rem;margin-bottom:.9rem;}
+.qt{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.45rem;}
+.qd{font-size:.83rem;line-height:1.72;color:var(--muted);}
 
-/* ── TRAITS ── */
-#sec-traits{background:var(--bg);}
-.traits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;margin-top:3.5rem;border:1px solid var(--line);}
-.trait{padding:2.4rem 2rem;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .3s;}
-.trait:hover{background:rgba(201,168,76,.04);}
-.trait-icon{font-size:1.3rem;margin-bottom:1.2rem;display:block;}
-.trait-title{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--white);margin-bottom:.6rem;letter-spacing:-.01em;}
-.trait-text{font-size:.82rem;line-height:1.85;color:var(--muted);}
+/* ── PIANO ── */
+#piano-sec{text-align:center;background:var(--dark);}
+.pwrap{position:relative;display:inline-flex;gap:3px;margin-top:2.5rem;user-select:none;touch-action:none;}
+.wk{width:46px;height:155px;background:linear-gradient(180deg,#f4efe6,#e5ddd0);border-radius:0 0 7px 7px;border:1px solid rgba(0,0,0,.25);cursor:pointer;position:relative;transition:.07s;box-shadow:0 4px 10px rgba(0,0,0,.5);}
+.wk:active,.wk.lit{background:linear-gradient(180deg,#e6c84b,#c8a020)!important;box-shadow:0 2px 4px rgba(0,0,0,.5)!important;}
+.bk{width:28px;height:96px;background:linear-gradient(180deg,#161616,#2e2e2e);border-radius:0 0 5px 5px;position:absolute;top:0;z-index:2;cursor:pointer;transition:.07s;box-shadow:2px 4px 8px rgba(0,0,0,.8);}
+.bk:active,.bk.lit{background:linear-gradient(180deg,#7a5d10,#5a4208)!important;}
+.klbl{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);font-size:.58rem;color:rgba(0,0,0,.35);font-weight:600;}
+.npop{position:fixed;font-size:1.4rem;pointer-events:none;animation:npopA 1.2s ease-out forwards;z-index:300;}
+@keyframes npopA{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-75px) scale(.4)}}
+#pmsg{margin-top:1.2rem;min-height:1.5rem;font-family:'Playfair Display',serif;font-style:italic;color:var(--gold);font-size:.95rem;opacity:0;transition:.3s;}
+#pmsg.show{opacity:.9;}
+
+/* ── TENNIS ── */
+#tennis-sec{background:var(--dark2);text-align:center;}
+#tc{border-radius:14px;cursor:pointer;max-width:100%;display:block;margin:2rem auto 0;box-shadow:0 18px 55px rgba(0,0,0,.6);}
+.tscore{display:flex;gap:3rem;justify-content:center;margin-top:1.4rem;}
+.tsb{text-align:center;}
+.tsn{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--gold);}
+.tsl{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+#tmsg{color:var(--muted);font-size:.83rem;margin-top:.6rem;min-height:1.2rem;}
 
 /* ── PHOTOS ── */
-#sec-photos{background:var(--bg2);}
-.photo-upload{display:flex;align-items:center;gap:1.2rem;margin-top:2.5rem;flex-wrap:wrap;}
-.upload-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1.4rem;border:1px solid rgba(201,168,76,.35);border-radius:3px;cursor:pointer;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);transition:.25s;background:none;}
-.upload-btn:hover{background:rgba(201,168,76,.07);border-color:var(--gold);}
+#photo-sec{background:var(--dark);}
+.upload-zone{text-align:center;margin-bottom:2.5rem;}
+.ubtn{display:inline-flex;flex-direction:column;align-items:center;gap:.6rem;padding:1.6rem 2.5rem;border:2px dashed rgba(212,175,55,.3);border-radius:14px;cursor:pointer;color:var(--muted);font-size:.83rem;transition:.3s;}
+.ubtn:hover{border-color:var(--gold);color:var(--gold);background:rgba(212,175,55,.04);}
+.ubtn-ico{font-size:2rem;}
 #phInput{display:none;}
-.photo-grid{margin-top:2rem;columns:3;gap:1rem;}
-.photo-grid .pitem{break-inside:avoid;margin-bottom:1rem;position:relative;overflow:hidden;border-radius:4px;cursor:pointer;}
-.photo-grid .pitem img{width:100%;display:block;transition:.5s;}
-.photo-grid .pitem:hover img{transform:scale(1.04);}
-.pdel{position:absolute;top:.5rem;right:.5rem;background:rgba(0,0,0,.7);border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;}
-.pitem:hover .pdel{opacity:1;}
-.ph-empty{margin-top:2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
-.ph-slot{aspect-ratio:3/4;background:rgba(255,255,255,.025);border:1px dashed rgba(255,255,255,.09);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:rgba(255,255,255,.15);font-size:.75rem;}
-@media(max-width:600px){.photo-grid{columns:2;}.ph-empty{grid-template-columns:repeat(2,1fr);}}
-
-/* LIGHTBOX */
-#lbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;}
-#lbox.open{display:flex;}
-#lbox img{max-width:90vw;max-height:88vh;border-radius:4px;object-fit:contain;}
-#lbox-close{position:absolute;top:1.5rem;right:1.5rem;font-size:1.4rem;color:var(--muted);cursor:pointer;background:none;border:none;line-height:1;}
+#pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;max-width:900px;margin:0 auto;}
+.pcard{border-radius:12px;overflow:hidden;aspect-ratio:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);position:relative;cursor:pointer;}
+.pcard img{width:100%;height:100%;object-fit:cover;transition:.45s;display:block;}
+.pcard:hover img{transform:scale(1.07);}
+.pdel{position:absolute;top:.45rem;right:.45rem;background:rgba(0,0,0,.75);border:none;color:#fff;width:24px;height:24px;border-radius:50%;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;z-index:2;}
+.pcard:hover .pdel{opacity:1;}
+.pempty{display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(255,255,255,.15);font-size:.78rem;gap:.4rem;height:100%;padding:1rem;text-align:center;}
+.pempty-ico{font-size:1.6rem;opacity:.4;}
 
 /* ── LETTER ── */
-#sec-letter{background:var(--bg);}
-.letter-wrap{margin-top:3.5rem;display:grid;grid-template-columns:1fr 2fr;gap:4rem;align-items:start;}
-.letter-aside{position:sticky;top:8rem;}
-.letter-aside-title{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.6rem;color:var(--white);line-height:1.3;}
-.letter-aside-sub{font-size:.78rem;color:var(--muted);margin-top:.8rem;line-height:1.7;}
-.letter-body{border-left:1px solid var(--line);padding-left:3rem;}
-#ltext{font-family:'Instrument Serif',serif;font-size:1.06rem;line-height:2.15;color:rgba(255,255,255,.78);white-space:pre-wrap;}
-.cur{display:inline-block;width:1.5px;height:1em;background:var(--gold);animation:cblink .75s infinite;vertical-align:text-bottom;margin-left:1px;}
-@keyframes cblink{0%,100%{opacity:1}50%{opacity:0}}
-@media(max-width:720px){.letter-wrap{grid-template-columns:1fr;}.letter-body{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:2rem;}.letter-aside{position:static;}}
+#letter-sec{background:radial-gradient(ellipse at 50% 40%,rgba(212,175,55,.04) 0%,transparent 65%),var(--dark2);}
+.lbox{max-width:700px;margin:3rem auto 0;background:rgba(255,255,255,.025);border:1px solid rgba(212,175,55,.12);border-radius:22px;padding:3.5rem 3rem;position:relative;overflow:hidden;}
+.lbox::before{content:'✦  ✦  ✦';position:absolute;top:1.2rem;left:50%;transform:translateX(-50%);font-size:.8rem;letter-spacing:.4em;color:rgba(212,175,55,.4);}
+.lbox::after{content:'';position:absolute;top:0;left:4rem;right:4rem;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.35),transparent);}
+#ltext{font-family:'Playfair Display',serif;font-size:1.02rem;line-height:2.05;color:rgba(255,255,255,.8);white-space:pre-wrap;padding-top:.5rem;}
+.cur{display:inline-block;width:2px;height:1.1em;background:var(--gold);animation:cur .75s infinite;vertical-align:text-bottom;margin-left:1px;}
+@keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
 /* ── HOUDINI ── */
-#sec-houdini{background:var(--bg2);text-align:center;padding-top:clamp(4rem,8vw,7rem);padding-bottom:clamp(4rem,8vw,7rem);}
-.h-eyebrow{font-size:.65rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:1.2rem;}
-.h-name{font-family:'DM Serif Display',serif;font-size:clamp(3.5rem,12vw,9rem);color:var(--white);letter-spacing:.06em;line-height:.95;}
-.h-line{width:80px;height:1px;background:var(--gold);margin:2rem auto;opacity:.4;}
-.h-desc{max-width:520px;margin:0 auto;font-size:.9rem;line-height:1.9;color:var(--muted);}
+#houdini-sec{text-align:center;background:var(--dark);overflow:hidden;position:relative;}
+#houdini-sec::before{content:'HOUDINI';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(8rem,25vw,18rem);color:rgba(255,255,255,.018);white-space:nowrap;pointer-events:none;letter-spacing:.2em;}
+.hlogo{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,8vw,6rem);letter-spacing:.35em;background:linear-gradient(135deg,#D4AF37,#FFD700,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:1rem 0 .4rem;}
+.hsub2{font-size:.78rem;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;}
+.hdesc{max-width:520px;margin:1rem auto 0;font-size:.93rem;line-height:1.85;color:rgba(255,255,255,.55);}
 
 /* ── WISHES ── */
-#sec-wishes{background:var(--bg);}
-.sky-wrap{margin-top:2.5rem;position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--line);}
-#wsky{width:100%;height:300px;cursor:crosshair;background:radial-gradient(ellipse at 50% 0%,rgba(12,12,40,.95),var(--bg) 80%);position:relative;display:block;}
-.sky-hint{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);pointer-events:none;white-space:nowrap;}
-.wst{position:absolute;pointer-events:none;font-size:1rem;animation:wfly var(--d) ease-out forwards;}
-.wlb{position:absolute;pointer-events:none;font-size:.68rem;color:rgba(201,168,76,.9);white-space:nowrap;animation:wfly var(--d) ease-out forwards;}
-@keyframes wfly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--tx),var(--ty))}}
+#wish-sec{text-align:center;background:var(--dark2);}
+#wsky{width:100%;max-width:720px;height:290px;margin:2rem auto 0;background:radial-gradient(ellipse at 50% 0%,rgba(18,18,55,.9),rgba(4,4,14,.98));border:1px solid rgba(255,255,255,.05);border-radius:22px;position:relative;cursor:pointer;overflow:hidden;}
+#wsky .wshint{position:absolute;bottom:.9rem;left:50%;transform:translateX(-50%);font-size:.76rem;color:rgba(255,255,255,.25);white-space:nowrap;pointer-events:none;}
+.wst{position:absolute;pointer-events:none;font-size:1.1rem;animation:wsa var(--dur) ease-out forwards;}
+.wlb{position:absolute;pointer-events:none;font-size:.7rem;color:rgba(255,215,0,.85);white-space:nowrap;animation:wsa var(--dur) ease-out forwards;}
+@keyframes wsa{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--tx),var(--ty))}}
 
 /* ── FINAL ── */
-#sec-final{background:var(--bg2);padding:clamp(6rem,12vw,11rem) clamp(1.5rem,8vw,8rem);}
-.final-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;}
-.final-big{font-family:'DM Serif Display',serif;font-size:clamp(3rem,9vw,7rem);line-height:.95;color:var(--white);letter-spacing:-.03em;}
-.final-big em{font-style:italic;color:var(--gold);}
-.final-text{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.1rem;line-height:1.95;color:var(--muted);}
-.final-sig{margin-top:2.5rem;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:.7;}
-@media(max-width:700px){.final-inner{grid-template-columns:1fr;gap:3rem;}}
+#final-sec{text-align:center;padding:8rem 2rem 6rem;background:radial-gradient(ellipse at 50% 100%,rgba(212,175,55,.07),transparent 60%);}
+.fbig{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,14vw,10rem);line-height:.95;background:linear-gradient(135deg,#D4AF37,#FFD700,#FF6B35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.fpara{font-family:'Playfair Display',serif;font-style:italic;margin-top:1.8rem;font-size:1.05rem;color:rgba(255,255,255,.5);max-width:460px;margin-inline:auto;line-height:1.85;}
+#spider{display:none;margin-top:2rem;font-size:.85rem;color:var(--muted);animation:up .5s forwards;}
+.egg-badge{display:inline-block;background:rgba(255,0,0,.15);border:1px solid rgba(255,0,0,.3);border-radius:20px;padding:.4rem 1rem;margin-top:.5rem;font-size:.78rem;color:#ff6b6b;}
 
-/* EASTER EGG */
-.egg-trigger{display:inline-block;margin-top:3rem;font-size:.7rem;color:rgba(255,255,255,.08);cursor:default;user-select:none;}
-#egg-pop{display:none;margin-top:1rem;font-size:.82rem;color:var(--muted);font-family:'Instrument Serif',serif;font-style:italic;}
+#clickhint{position:fixed;bottom:1.4rem;left:1.4rem;background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.09);border-radius:30px;padding:.45rem 1rem;font-size:.73rem;color:rgba(255,255,255,.35);z-index:100;pointer-events:none;}
 
-/* Click ripple */
-.ripple{position:fixed;border-radius:50%;pointer-events:none;width:6px;height:6px;border:1px solid rgba(201,168,76,.6);animation:ripout .6s ease-out forwards;z-index:9998;}
-@keyframes ripout{0%{transform:scale(1);opacity:.7}100%{transform:scale(18);opacity:0}}
+@media(max-width:580px){.lbox{padding:2.5rem 1.4rem;}.wk{width:36px;height:125px;}.bk{width:22px;height:78px;}}
 </style>
 </head>
 <body>
-<canvas id="fw"></canvas>
+<canvas id="fwCanvas"></canvas>
+<div id="clickhint">🎆 Click anywhere · fireworks</div>
 
-<nav>
-  <div class="nav-logo">Eibo</div>
-  <div class="nav-links">
-    <a href="#sec-story">Story</a>
-    <a href="#sec-photos">Memories</a>
-    <a href="#sec-letter">Letter</a>
-    <a href="#sec-final">Final</a>
-  </div>
+<nav id="snav">
+  <div class="nd on" title="Home"></div>
+  <div class="nd" title="Countdown"></div>
+  <div class="nd" title="Our Story"></div>
+  <div class="nd" title="The Man"></div>
+  <div class="nd" title="Piano"></div>
+  <div class="nd" title="Tennis"></div>
+  <div class="nd" title="Photos"></div>
+  <div class="nd" title="Letter"></div>
+  <div class="nd" title="Houdini"></div>
+  <div class="nd" title="Wishes"></div>
 </nav>
 
-<!-- LIGHTBOX -->
-<div id="lbox"><button id="lbox-close">✕</button><img id="lbox-img" src="" alt=""></div>
-
-<!-- ── HERO ── -->
+<!-- HERO -->
 <section id="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-dots"></div>
-  <div style="text-align:center;position:relative;z-index:2;">
-    <div class="hero-tag">A birthday tribute · Iraq's finest</div>
-    <h1 class="hero-name"><span>EIBO</span></h1>
-    <p class="hero-sub">Happy Birthday, Big Brother</p>
+  <div class="fstrip" id="fstrip"></div>
+  <div id="sfld"></div>
+  <div style="position:relative;z-index:2;pointer-events:none;">
+    <div class="eyebrow">A tribute to a legend &nbsp;·&nbsp; Iraq's Finest</div>
+    <div class="hname">EIBO</div>
+    <div class="hsub">Happy Birthday, Big Brother 🎂</div>
   </div>
-  <div class="hero-scroll">
-    <div class="scroll-line"></div>
-    <span>scroll</span>
-  </div>
+  <div class="hscroll">↓ scroll</div>
 </section>
 
-<div class="rule"></div>
+<!-- COUNTDOWN -->
+<section id="cdown" class="sec" style="padding-top:0;padding-bottom:0;">
+  <div class="sec-head rv">
+    <div class="sec-label">the moment approaches</div>
+    <div class="sec-title">Until Your Birthday</div>
+    <div class="divider"></div>
+  </div>
+  <div id="timer">
+    <div class="tb"><div class="tn" id="th">00</div><div class="tl">hours</div></div>
+    <div class="tc">:</div>
+    <div class="tb"><div class="tn" id="tm">00</div><div class="tl">minutes</div></div>
+    <div class="tc">:</div>
+    <div class="tb"><div class="tn" id="ts">00</div><div class="tl">seconds</div></div>
+  </div>
+  <div id="bdayblast"><div class="bbt">🎂 HAPPY BIRTHDAY EIBO 🎂</div><p style="color:var(--muted);font-size:.9rem;margin-top:.5rem;">Today is yours. Every second of it.</p></div>
+</section>
 
-<!-- ── STORY ── -->
-<section id="sec-story" class="section">
-  <div class="section-inner">
-    <span class="label rv">how we got here</span>
-    <h2 class="heading rv" data-d="1">Our Story</h2>
-    <div class="tl">
-      <div class="tl-item rv" data-d="1">
-        <div class="tl-year">The beginning</div>
-        <div class="tl-body">
-          <div class="tl-title">A reel on my feed</div>
-          <p class="tl-text">You appeared on my FYP before I even knew your name. A reel. A face. Something about the way you carried yourself made me stop scrolling entirely. There are moments that feel ordinary until you look back and realize — they were everything.</p>
-        </div>
-      </div>
-      <div class="tl-item rv" data-d="2">
-        <div class="tl-year">The shared dream</div>
-        <div class="tl-body">
-          <div class="tl-title">UWC — a world worth chasing</div>
-          <p class="tl-text">We both carried the same restless desire. To go further. To see more. To build something beyond where we were born. The UWC group brought us into the same orbit — two people chasing the same star from different rooms.</p>
-        </div>
-      </div>
-      <div class="tl-item rv" data-d="3">
-        <div class="tl-year">Side by side</div>
-        <div class="tl-body">
-          <div class="tl-title">Volunteering together</div>
-          <p class="tl-text">Orphanages, churches, schools. We showed up to places where showing up actually means something. I watched how you moved through those rooms — with ease, with warmth, like you'd always belonged there. That day taught me what giving really looks like.</p>
-        </div>
-      </div>
-      <div class="tl-item rv" data-d="4">
-        <div class="tl-year">Right now</div>
-        <div class="tl-body">
-          <div class="tl-title">Making the film together</div>
-          <p class="tl-text">Two weeks of meetings, scripts, ideas thrown around, torn apart, rebuilt better. When I told you about the film you didn't just offer to help — you jumped in with both feet. This film has your fingerprints on it now. And I wouldn't have it any other way.</p>
-        </div>
-      </div>
+<!-- OUR STORY TIMELINE -->
+<section id="tl-sec" class="sec">
+  <div class="sec-head rv">
+    <div class="sec-label">how we got here</div>
+    <div class="sec-title">Our Story</div>
+    <div class="divider"></div>
+  </div>
+  <div class="tlwrap">
+    <div class="tli">
+      <div class="tli-dot"></div>
+      <div class="tli-ico">📱</div>
+      <div class="tli-yr">The beginning</div>
+      <div class="tli-t">A reel on my feed</div>
+      <div class="tli-d">You appeared on my FYP before I even knew your name. A reel. A face. Something about the way you carried yourself made me stop scrolling entirely. There are moments that feel ordinary until you look back and realize — they were everything.</div>
+    </div>
+    <div class="tli">
+      <div class="tli-dot"></div>
+      <div class="tli-ico">🌍</div>
+      <div class="tli-yr">The shared dream</div>
+      <div class="tli-t">UWC — a world worth chasing</div>
+      <div class="tli-d">We both carried that same restless desire. To go further. To see more. To build something beyond where we were born. The UWC group brought us into the same orbit — two people chasing the same star from different rooms.</div>
+    </div>
+    <div class="tli">
+      <div class="tli-dot"></div>
+      <div class="tli-ico">🏫</div>
+      <div class="tli-yr">Side by side</div>
+      <div class="tli-t">Volunteering together</div>
+      <div class="tli-d">Orphanages, churches, schools. We showed up to places where showing up actually means something. I watched how you moved through those rooms — with ease, with warmth, like you'd always belonged there. I learned something that day about what giving really looks like.</div>
+    </div>
+    <div class="tli">
+      <div class="tli-dot"></div>
+      <div class="tli-ico">🎬</div>
+      <div class="tli-yr">Right now</div>
+      <div class="tli-t">Making the film together</div>
+      <div class="tli-d">Two weeks of meetings, scripts, ideas thrown around, torn apart, rebuilt better. When I told you about the film, you didn't just offer to help — you jumped in with both feet. This film has your fingerprints on it now. And I wouldn't have it any other way.</div>
     </div>
   </div>
 </section>
 
-<div class="rule"></div>
-
-<!-- ── STATS ── -->
-<section id="sec-stats" class="section" style="padding-top:clamp(3rem,6vw,6rem);padding-bottom:clamp(3rem,6vw,6rem);">
-  <div class="section-inner">
-    <span class="label rv">by the numbers</span>
-    <div class="stats-grid rv" data-d="1">
-      <div class="stat"><div class="stat-num">15<span>–16</span></div><div class="stat-label">Age when he reached financial independence and built his first brand</div></div>
-      <div class="stat"><div class="stat-num">1<span>st</span></div><div class="stat-label">Of his kind — the face of distinguished school students across Iraq</div></div>
-      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">People whose lives he's changed simply by believing in them first</div></div>
-      <div class="stat"><div class="stat-num">1</div><div class="stat-label">Friend I can call a real big brother — not by blood, but by choice</div></div>
-    </div>
+<!-- THE MAN -->
+<section id="qsec" class="sec">
+  <div class="sec-head rv">
+    <div class="sec-label">the anatomy of a legend</div>
+    <div class="sec-title">What Makes Eibo, Eibo</div>
+    <div class="divider"></div>
+  </div>
+  <div class="qgrid">
+    <div class="qc rv"><div class="qi">🎾</div><div class="qt">The Athlete</div><div class="qd">Professional tennis. The same discipline it takes to master a sport — the early mornings, the losses that teach you, the wins that only come after both — is present in everything he does. He competes against himself, first.</div></div>
+    <div class="qc rv"><div class="qi">🎬</div><div class="qt">The Filmmaker</div><div class="qd">He sees the world in frames. Angles, light, story. Give him a camera and he gives you something that makes you feel something. That's not a skill — that's a calling. Film school is just the world finally catching up.</div></div>
+    <div class="qc rv"><div class="qi">🎹</div><div class="qt">The Pianist</div><div class="qd">Of course he plays piano. Every dimension of this person is built for depth. Music is how he goes somewhere no one else can follow — a private language between him and the keys.</div></div>
+    <div class="qc rv"><div class="qi">⛰️</div><div class="qt">The Hiker</div><div class="qd">He climbs mountains — literally. There's something about earning a view with your legs, about seeking altitude on purpose, that says everything about the kind of man he is. He doesn't do shortcuts. Not on trails, not in life.</div></div>
+    <div class="qc rv"><div class="qi">🔥</div><div class="qt">Self-Made at 16</div><div class="qd">Financial independence before most people have had their first job. He built Houdini, built a following, built a life — before he could vote. Not because he had to. Because he chose to. Let that sit for a second.</div></div>
+    <div class="qc rv"><div class="qi">❤️</div><div class="qt">Big Brother</div><div class="qd">He pulls people up. When I said I wanted to create, to build, to be independent — he didn't just nod. He said "let's do it together." No conditions. No agenda. Just — here, come build beside me. That's not networking. That's brotherhood.</div></div>
   </div>
 </section>
 
-<div class="rule"></div>
+<!-- PIANO -->
+<section id="piano-sec" class="sec">
+  <div class="sec-head rv">
+    <div class="sec-label">for the pianist</div>
+    <div class="sec-title">Play Something for Eibo 🎹</div>
+    <p class="sec-sub">Click or tap the keys — send a melody</p>
+    <div class="divider"></div>
+  </div>
+  <div class="pwrap rv" id="pwrap"></div>
+  <div id="pmsg"></div>
+</section>
 
-<!-- ── TRAITS ── -->
-<section id="sec-traits" class="section">
-  <div class="section-inner">
-    <span class="label rv">who he is</span>
-    <h2 class="heading rv" data-d="1">The Many Sides <em>of Eibo</em></h2>
-    <div class="traits-grid rv" data-d="2">
-      <div class="trait"><span class="trait-icon">🎾</span><div class="trait-title">The Athlete</div><p class="trait-text">Professional tennis. The same discipline it takes to master a sport — the early mornings, the losses that sharpen you — is present in everything he does. He competes with himself, first.</p></div>
-      <div class="trait"><span class="trait-icon">🎬</span><div class="trait-title">The Filmmaker</div><p class="trait-text">He sees the world in frames. Give him a camera and he gives you something that makes you feel something. That's not a skill — that's a calling. Film school is just the world catching up.</p></div>
-      <div class="trait"><span class="trait-icon">🎹</span><div class="trait-title">The Pianist</div><p class="trait-text">Of course he plays piano. Every dimension of this person is built for depth. Music is how he goes somewhere no one else can follow — a private language between him and the keys.</p></div>
-      <div class="trait"><span class="trait-icon">⛰️</span><div class="trait-title">The Hiker</div><p class="trait-text">He climbs mountains — literally. There's something about earning a view with your legs that says everything about the kind of man he is. He doesn't do shortcuts. Not on trails, not in life.</p></div>
-      <div class="trait"><span class="trait-icon">🔥</span><div class="trait-title">Self-Made</div><p class="trait-text">Financial independence before most people have had their first job. He built Houdini, built a following, built a life — before he could vote. Not because he had to. Because he chose to.</p></div>
-      <div class="trait"><span class="trait-icon">❤️</span><div class="trait-title">Big Brother</div><p class="trait-text">He pulls people up. When I said I wanted to create and build, he didn't just nod — he said "let's do it together." No conditions. No agenda. Just: come build beside me. That's brotherhood.</p></div>
-    </div>
+<!-- TENNIS -->
+<section id="tennis-sec" class="sec">
+  <div class="sec-head rv">
+    <div class="sec-label">for the athlete</div>
+    <div class="sec-title">Rally for Eibo 🎾</div>
+    <p class="sec-sub">Move your mouse · click / tap to start · how long can you last?</p>
+    <div class="divider"></div>
+  </div>
+  <canvas id="tc" width="600" height="280"></canvas>
+  <div class="tscore">
+    <div class="tsb"><div class="tsn" id="rally">0</div><div class="tsl">Rally</div></div>
+    <div class="tsb"><div class="tsn" id="best">0</div><div class="tsl">Best</div></div>
+  </div>
+  <p id="tmsg"></p>
+</section>
+
+<!-- PHOTOS -->
+<section id="photo-sec" class="sec">
+  <div class="sec-head rv">
+    <div class="sec-label">memories</div>
+    <div class="sec-title">Us, Together 📸</div>
+    <p class="sec-sub">Add the photos that matter most</p>
+    <div class="divider"></div>
+  </div>
+  <div class="upload-zone rv">
+    <label for="phInput" class="ubtn">
+      <span class="ubtn-ico">📷</span>
+      <strong style="color:rgba(255,255,255,.7);">Add Photos</strong>
+      <span>tap to upload</span>
+    </label>
+    <input type="file" id="phInput" accept="image/*" multiple>
+  </div>
+  <div id="pgrid"></div>
+</section>
+
+<!-- LETTER -->
+<section id="letter-sec" class="sec">
+  <div class="sec-head rv">
+    <div class="sec-label">written for you</div>
+    <div class="sec-title">A Letter, From Me to You</div>
+    <div class="divider"></div>
+  </div>
+  <div class="lbox rv">
+    <div id="ltext"><span class="cur"></span></div>
   </div>
 </section>
 
-<div class="rule"></div>
-
-<!-- ── PHOTOS ── -->
-<section id="sec-photos" class="section">
-  <div class="section-inner">
-    <span class="label rv">our memories</span>
-    <h2 class="heading rv" data-d="1">Us, Together</h2>
-    <div class="photo-upload rv" data-d="2">
-      <label for="phInput" class="upload-btn">+ Add Photos</label>
-      <input type="file" id="phInput" accept="image/*" multiple>
-      <span style="font-size:.78rem;color:var(--muted);">Upload the moments that matter</span>
-    </div>
-    <div id="pgrid"></div>
+<!-- HOUDINI -->
+<section id="houdini-sec" class="sec">
+  <div class="rv">
+    <div class="sec-label">the brand he built</div>
+    <div class="hlogo">HOUDINI</div>
+    <div class="hsub2">Iraq's Most Distinguished Brand · Est. by a teenager</div>
+    <p class="hdesc">He didn't just make hoodies. He made something students across Iraq could wear with pride — a symbol stitched in fabric, proof that distinguished means something, that excellence deserves its own uniform. He built an identity before he built anything else. And he did it at sixteen.</p>
   </div>
 </section>
 
-<div class="rule"></div>
-
-<!-- ── LETTER ── -->
-<section id="sec-letter" class="section">
-  <div class="section-inner">
-    <span class="label rv">written for you</span>
-    <div class="letter-wrap">
-      <div class="letter-aside rv">
-        <p class="letter-aside-title">A letter,<br>from me<br>to you</p>
-        <p class="letter-aside-sub">Scroll to read — it writes itself as you arrive.</p>
-      </div>
-      <div class="letter-body rv" data-d="2">
-        <div id="ltext"><span class="cur"></span></div>
-      </div>
-    </div>
+<!-- WISHES -->
+<section id="wish-sec" class="sec">
+  <div class="sec-head rv">
+    <div class="sec-label">from the heart</div>
+    <div class="sec-title">Send a Wish to the Sky 🌠</div>
+    <p class="sec-sub">Click inside — launch a wish for his year ahead</p>
+    <div class="divider"></div>
   </div>
+  <div id="wsky"><div class="wshint">✨ click to send a wish</div></div>
 </section>
 
-<div class="rule"></div>
-
-<!-- ── HOUDINI ── -->
-<section id="sec-houdini" class="section">
-  <div class="section-inner" style="text-align:center;">
-    <span class="h-eyebrow rv">the brand he built</span>
-    <div class="h-name rv" data-d="1">HOUDINI</div>
-    <div class="h-line rv" data-d="2"></div>
-    <p class="h-desc rv" data-d="3">He didn't just make hoodies. He made something students across Iraq could wear with pride — a symbol stitched in fabric, proof that distinguished means something. He built an identity before he built anything else. And he did it at sixteen.</p>
-  </div>
-</section>
-
-<div class="rule"></div>
-
-<!-- ── WISHES ── -->
-<section id="sec-wishes" class="section">
-  <div class="section-inner">
-    <span class="label rv">from the heart</span>
-    <h2 class="heading rv" data-d="1">Send a Wish</h2>
-    <p style="color:var(--muted);font-size:.85rem;margin-top:.6rem;" class="rv" data-d="2">Click inside to launch a wish into his year ahead</p>
-    <div class="sky-wrap rv" data-d="3">
-      <canvas id="wsky" width="1100" height="300"></canvas>
-      <div class="sky-hint">Click to send a wish</div>
-    </div>
-  </div>
-</section>
-
-<div class="rule"></div>
-
-<!-- ── FINAL ── -->
-<section id="sec-final">
-  <div class="final-inner">
-    <div class="rv">
-      <div class="final-big">Happy<br>Birth<em>day,</em><br>Eibo.</div>
-      <div class="egg-trigger" onclick="document.getElementById('egg-pop').style.display='block'">🕷</div>
-      <div id="egg-pop">You found it — he'd be hyped about that new Spider-Man too. 🎬</div>
-    </div>
-    <div class="rv" data-d="2">
-      <p class="final-text">May every door you reach for swing wide open. May every frame you shoot tell exactly the story you meant. May this year be the loudest proof yet that you were right to believe — in your work, in your people, and in yourself.</p>
-      <p class="final-text" style="margin-top:1.5rem;">You are living proof that being young is not the same as being small. The best frames of your story haven't been shot yet.</p>
-      <p class="final-sig">With pride, admiration, and love — your friend ❤️</p>
-    </div>
+<!-- FINAL -->
+<section id="final-sec">
+  <div class="rv">
+    <div class="fbig">Happy<br>Birthday<br>Eibo</div>
+    <p class="fpara">May every door you reach for swing wide open. May every frame you shoot tell exactly the story you meant. May this year be the loudest proof yet that you were right to believe.</p>
+    <p style="margin-top:1.5rem;color:var(--gold);font-family:'Playfair Display',serif;font-style:italic;font-size:.95rem;">With pride, admiration, and love — your friend. ❤️</p>
+    <p style="margin-top:3rem;color:rgba(255,255,255,.12);font-size:.7rem;cursor:pointer;" id="eggTrigger" onclick="showEgg()">🕷</p>
+    <div id="spider"><p style="color:rgba(255,255,255,.45);font-size:.82rem;">You found it 👀</p><div class="egg-badge">🕷 Eibo is hyped for the new Spider-Man — and honestly, so are we 🎬</div></div>
   </div>
 </section>
 
 <script>
+// ── STARS ──
+const sf=document.getElementById('sfld');
+for(let i=0;i<160;i++){
+  const s=document.createElement('div');s.className='st';
+  const z=Math.random()*2.2+.3;
+  s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;animation-delay:${Math.random()*5}s;`;
+  sf.appendChild(s);
+}
+
+// ── FILM STRIP HOLES ──
+const fs=document.getElementById('fstrip');
+for(let i=0;i<60;i++){const h=document.createElement('div');h.className='fhole';fs.appendChild(h);}
+
 // ── FIREWORKS ──
-const fw=document.getElementById('fw');
+const fw=document.getElementById('fwCanvas');
 const fc=fw.getContext('2d');
 let FW,FH;
-const resize=()=>{fw.width=FW=innerWidth;fw.height=FH=innerHeight;};
-resize();window.addEventListener('resize',resize);
+(function rz(){fw.width=FW=innerWidth;fw.height=FH=innerHeight;})();
+window.addEventListener('resize',()=>{fw.width=FW=innerWidth;fw.height=FH=innerHeight;});
 const pts=[];
-const cols=['#c9a84c','#e8c96e','#fff','rgba(255,255,255,.6)','#f0d98a'];
+const fcl=['#D4AF37','#FFD700','#FF6B35','#FF6B9D','#9B59B6','#52c7b0','#fff','#3498DB'];
 function Pt(x,y){
-  const a=Math.random()*Math.PI*2,sp=Math.random()*5+1.5;
-  this.x=x;this.y=y;this.vx=Math.cos(a)*sp;this.vy=Math.sin(a)*sp;
-  this.al=1;this.dc=Math.random()*.022+.008;this.r=Math.random()*2+.5;
-  this.col=cols[Math.floor(Math.random()*cols.length)];
+  this.x=x;this.y=y;
+  const a=Math.random()*Math.PI*2,sp=Math.random()*7+2;
+  this.vx=Math.cos(a)*sp;this.vy=Math.sin(a)*sp;
+  this.a=1;this.dec=Math.random()*.02+.008;
+  this.r=Math.random()*2.4+.6;
+  this.col=fcl[Math.floor(Math.random()*fcl.length)];
 }
-function boom(x,y,n=60){for(let i=0;i<n;i++)pts.push(new Pt(x,y));}
+function boom(x,y,n=85){for(let i=0;i<n;i++)pts.push(new Pt(x,y));}
 (function loop(){
   fc.clearRect(0,0,FW,FH);
   for(let i=pts.length-1;i>=0;i--){
-    const p=pts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.09;p.al-=p.dc;
-    if(p.al<=0){pts.splice(i,1);continue;}
-    fc.save();fc.globalAlpha=p.al;fc.fillStyle=p.col;
+    const p=pts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.1;p.a-=p.dec;
+    if(p.a<=0){pts.splice(i,1);continue;}
+    fc.save();fc.globalAlpha=p.a;fc.fillStyle=p.col;
     fc.beginPath();fc.arc(p.x,p.y,p.r,0,Math.PI*2);fc.fill();fc.restore();
   }
   requestAnimationFrame(loop);
 })();
-
-// Ripple + firework on click
 document.addEventListener('click',e=>{
-  if(['wsky','phInput'].includes(e.target.id)||e.target.closest('label')||e.target.closest('nav')||e.target.closest('#lbox'))return;
-  boom(e.clientX,e.clientY,55);
-  const rp=document.createElement('div');rp.className='ripple';
-  rp.style.cssText=`left:${e.clientX-3}px;top:${e.clientY-3}px;`;
-  document.body.appendChild(rp);setTimeout(()=>rp.remove(),650);
+  if(['tc','wsky','pwrap','phInput'].some(id=>e.target.id===id))return;
+  if(e.target.classList.contains('wk')||e.target.classList.contains('bk')||e.target.classList.contains('ubtn'))return;
+  boom(e.clientX,e.clientY);
 });
 
 // ── COUNTDOWN ──
 function tick(){
-  const now=new Date(),start=new Date(now);
-  start.setHours(0,0,0,0);
-  const elapsed=now-start;
-  if(elapsed<90000){
+  const now=new Date();
+  const start=new Date(now);start.setHours(0,0,0,0);
+  const diff=now-start;
+  if(diff<90000){
     document.getElementById('timer').style.display='none';
-    document.getElementById('bday-line').style.display='block';
-    for(let i=0;i<10;i++)setTimeout(()=>boom(Math.random()*FW,Math.random()*FH*.5,100),i*400);
+    document.getElementById('bdayblast').style.display='block';
+    for(let i=0;i<12;i++)setTimeout(()=>boom(Math.random()*FW,Math.random()*FH*.55,130),i*350);
     return;
   }
   const next=new Date(start);next.setDate(next.getDate()+1);
-  const r=next-now;
-  document.getElementById('th').textContent=String(Math.floor(r/3600000)).padStart(2,'0');
-  document.getElementById('tm').textContent=String(Math.floor(r%3600000/60000)).padStart(2,'0');
-  document.getElementById('ts').textContent=String(Math.floor(r%60000/1000)).padStart(2,'0');
+  const rem=next-now;
+  const h=Math.floor(rem/3600000),m=Math.floor(rem%3600000/60000),s=Math.floor(rem%60000/1000);
+  document.getElementById('th').textContent=String(h).padStart(2,'0');
+  document.getElementById('tm').textContent=String(m).padStart(2,'0');
+  document.getElementById('ts').textContent=String(s).padStart(2,'0');
 }
 setInterval(tick,1000);tick();
 
+// ── SIDE NAV ──
+const SEC=['hero','cdown','tl-sec','qsec','piano-sec','tennis-sec','photo-sec','letter-sec','houdini-sec','wish-sec'];
+const dots=[...document.querySelectorAll('.nd')];
+dots.forEach((d,i)=>d.addEventListener('click',()=>document.getElementById(SEC[i])?.scrollIntoView({behavior:'smooth'})));
+window.addEventListener('scroll',()=>{
+  SEC.forEach((id,i)=>{
+    const el=document.getElementById(id);if(!el)return;
+    const r=el.getBoundingClientRect();
+    dots[i]?.classList.toggle('on',r.top<=80&&r.bottom>80);
+  });
+},{passive:true});
+
 // ── SCROLL REVEAL ──
-const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
-document.querySelectorAll('.rv').forEach(el=>observer.observe(el));
+const rv=document.querySelectorAll('.rv,.tli');
+new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.13}).observe(...[],rv.forEach(el=>new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.12}).observe(el)));
+
+// ── PIANO ──
+let actx;
+function getAC(){return actx||(actx=new(window.AudioContext||window.webkitAudioContext)());}
+const WK=[{f:261.63,l:'C'},{f:293.66,l:'D'},{f:329.63,l:'E'},{f:349.23,l:'F'},{f:392.00,l:'G'},{f:440.00,l:'A'},{f:493.88,l:'B'},{f:523.25,l:'C'}];
+const BK=[{f:277.18,a:0},{f:311.13,a:1},{f:369.99,a:3},{f:415.30,a:4},{f:466.16,a:5}];
+const pw=document.getElementById('pwrap');
+const pmsgs=['Beautiful 🎹','He would love that note ✨','Keep going...','Play it for him 🎶','A melody to the sky 🌟','That one felt warm','Notes for a pianist 🎹'];
+let pmi=0;
+WK.forEach(n=>{
+  const k=document.createElement('div');k.className='wk';
+  k.innerHTML=`<span class="klbl">${n.l}</span>`;
+  k.addEventListener('pointerdown',()=>pNote(n.f,k));
+  pw.appendChild(k);
+});
+BK.forEach(b=>{
+  const k=document.createElement('div');k.className='bk';
+  k.style.left=(b.a*49+33)+'px';
+  k.addEventListener('pointerdown',e=>{e.stopPropagation();pNote(b.f,k);});
+  pw.appendChild(k);
+});
+function pNote(f,el){
+  const ac=getAC();
+  const osc=ac.createOscillator(),g=ac.createGain(),fil=ac.createBiquadFilter();
+  fil.type='lowpass';fil.frequency.value=1800;
+  osc.connect(fil);fil.connect(g);g.connect(ac.destination);
+  osc.type='triangle';osc.frequency.value=f;
+  g.gain.setValueAtTime(.45,ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+1.6);
+  osc.start();osc.stop(ac.currentTime+1.6);
+  el.classList.add('lit');setTimeout(()=>el.classList.remove('lit'),200);
+  const r=el.getBoundingClientRect();
+  const np=document.createElement('div');np.className='npop';np.textContent='♪';
+  np.style.cssText=`left:${r.left+r.width/2}px;top:${r.top}px;color:${fcl[Math.floor(Math.random()*4)]};`;
+  document.body.appendChild(np);setTimeout(()=>np.remove(),1300);
+  const pm=document.getElementById('pmsg');
+  pm.textContent=pmsgs[pmi++%pmsgs.length];pm.classList.add('show');
+  setTimeout(()=>pm.classList.remove('show'),2000);
+}
+
+// ── TENNIS ──
+const tc=document.getElementById('tc');
+const tx=tc.getContext('2d');
+let TW=600,TH=280;
+function rndRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);c.closePath();}
+let ball={x:TW/2,y:TH/2,vx:3.5,vy:-3.5,r:9};
+let pad={x:TW/2,y:TH-28,w:88,h:11};
+let ral=0,best2=0,active=false,gmsg='Click to start rallying!';
+const tmsgs=['Ace! 🎾','Eibo would be proud!','Smash it! 💪','Keep it up! 🎾','Like Eibo on the court!','Unstoppable! 🔥'];
+function drawT(){
+  tx.fillStyle='#2a5225';tx.fillRect(0,0,TW,TH);
+  tx.strokeStyle='rgba(255,255,255,.35)';tx.lineWidth=2;
+  tx.setLineDash([7,5]);tx.beginPath();tx.moveTo(0,TH/2);tx.lineTo(TW,TH/2);tx.stroke();tx.setLineDash([]);
+  tx.strokeStyle='rgba(255,255,255,.25)';tx.lineWidth=1.5;tx.strokeRect(18,18,TW-36,TH-36);
+  tx.beginPath();tx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+  tx.fillStyle='#C8FF00';tx.fill();tx.strokeStyle='rgba(0,0,0,.3)';tx.lineWidth=1;tx.stroke();
+  rndRect(tx,pad.x-pad.w/2,pad.y-pad.h/2,pad.w,pad.h,6);
+  tx.fillStyle='#D4AF37';tx.fill();
+  if(!active){
+    tx.fillStyle='rgba(0,0,0,.55)';tx.fillRect(0,0,TW,TH);
+    tx.fillStyle='#fff';tx.font='bold 18px Inter';tx.textAlign='center';tx.fillText(gmsg,TW/2,TH/2);
+  }
+}
+function loopT(){
+  if(!active)return;
+  ball.x+=ball.vx;ball.y+=ball.vy;
+  if(ball.x<ball.r+18||ball.x>TW-ball.r-18)ball.vx*=-1;
+  if(ball.y<ball.r+18)ball.vy*=-1;
+  if(ball.y+ball.r>=pad.y-pad.h/2&&ball.y-ball.r<=pad.y+pad.h/2&&ball.x>pad.x-pad.w/2&&ball.x<pad.x+pad.w/2){
+    ball.vy=-(Math.abs(ball.vy)+.07);ball.vx+=(ball.x-pad.x)*.035;
+    ball.y=pad.y-pad.h/2-ball.r;ral++;if(ral>best2)best2=ral;
+    document.getElementById('rally').textContent=ral;document.getElementById('best').textContent=best2;
+    const r2=tc.getBoundingClientRect();boom(r2.left+ball.x,r2.top+ball.y,18);
+    document.getElementById('tmsg').textContent=tmsgs[Math.floor(Math.random()*tmsgs.length)];
+  }
+  if(ball.y>TH+20){
+    active=false;gmsg=`Rallied ${ral}! Best: ${best2}. Click to try again!`;
+    ral=0;document.getElementById('rally').textContent=0;
+    ball={x:TW/2,y:TH/2,vx:3+(Math.random()-.5)*2,vy:-3.5,r:9};
+    document.getElementById('tmsg').textContent='';
+  }
+  drawT();requestAnimationFrame(loopT);
+}
+tc.addEventListener('click',()=>{if(!active){active=true;loopT();}});
+tc.addEventListener('pointermove',e=>{
+  const r2=tc.getBoundingClientRect();
+  pad.x=Math.max(pad.w/2,Math.min(TW-pad.w/2,((e.clientX-r2.left)/r2.width)*TW));
+  if(!active)drawT();
+});
+tc.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const r2=tc.getBoundingClientRect();
+  pad.x=Math.max(pad.w/2,Math.min(TW-pad.w/2,((e.touches[0].clientX-r2.left)/r2.width)*TW));
+},{passive:false});
+function rsTennis(){const mw=Math.min(600,innerWidth-40);tc.style.width=mw+'px';}
+rsTennis();window.addEventListener('resize',rsTennis);
+drawT();
 
 // ── PHOTOS ──
 const phin=document.getElementById('phInput');
 const pg=document.getElementById('pgrid');
-const lbox=document.getElementById('lbox');
-const lboxImg=document.getElementById('lbox-img');
-const lboxClose=document.getElementById('lbox-close');
-let photos=[];
+const photos=[];
 phin.addEventListener('change',e=>{
   [...e.target.files].forEach(f=>{
     const r=new FileReader();
@@ -421,102 +549,91 @@ phin.addEventListener('change',e=>{
     r.readAsDataURL(f);
   });phin.value='';
 });
-lboxClose.addEventListener('click',()=>lbox.classList.remove('open'));
-lbox.addEventListener('click',e=>{if(e.target===lbox)lbox.classList.remove('open');});
-
 function renderPh(){
   pg.innerHTML='';
   if(!photos.length){
-    const empty=document.createElement('div');empty.className='ph-empty';
-    for(let i=0;i<3;i++){const s=document.createElement('div');s.className='ph-slot';s.innerHTML='<span style="font-size:1.2rem;opacity:.3">📷</span><span>Add a memory</span>';empty.appendChild(s);}
-    pg.appendChild(empty);return;
+    for(let i=0;i<4;i++){
+      const c=document.createElement('div');c.className='pcard';
+      c.innerHTML=`<div class="pempty"><span class="pempty-ico">📷</span><span>Add a memory</span></div>`;
+      pg.appendChild(c);
+    }return;
   }
-  const grid=document.createElement('div');grid.className='photo-grid';
   photos.forEach((src,i)=>{
-    const item=document.createElement('div');item.className='pitem';
+    const c=document.createElement('div');c.className='pcard';
     const img=document.createElement('img');img.src=src;img.alt='Memory';
-    img.addEventListener('click',()=>{lboxImg.src=src;lbox.classList.add('open');});
     const del=document.createElement('button');del.className='pdel';del.textContent='✕';
     del.addEventListener('click',e=>{e.stopPropagation();photos.splice(i,1);renderPh();});
-    item.appendChild(img);item.appendChild(del);grid.appendChild(item);
+    c.appendChild(img);c.appendChild(del);pg.appendChild(c);
   });
-  pg.appendChild(grid);
 }
 renderPh();
 
 // ── TYPED LETTER ──
-const LETTER=`Dear Eibo,
+const LTR=`Dear Eibo,
 
-There's a version of my life where I never stopped on that reel. Where I kept scrolling, and you stayed a stranger, and none of this happened. I think about that version sometimes — and I feel genuinely sorry for it.
+There's a version of my life where I never stopped on that reel. Where I kept scrolling, and you stayed a stranger, and none of this happened. I think about that version sometimes... and I feel genuinely sorry for it.
 
 Because knowing you, even for this stretch of time, has been one of those quiet gifts that doesn't announce itself until you look back and realize: that changed something in me.
 
-You were fifteen, maybe sixteen — and you had already built something real. Not just a brand, not just a following — but a reputation held up by actual substance. Houdini wasn't just hoodies. It was proof. Proof that when you move with intention and with belief, the world starts to make room for you. While others your age were still figuring out the question, you had already moved on to the answer.
+You were fifteen, maybe sixteen.. and you had already built something real. Not just a brand, not just a following...but a reputation held up by actual substance. Houdini wasn't just hoodies. It was proof. Proof that when you move with intention and with belief, the world starts to make room for you. While others your age were still figuring out the question, you had already moved on to the answer.
 
-What gets me most, though — is this: you never made success look cold. You made it look like something worth sharing. When I told you I wanted to create, to build, to be independent — you didn't just nod and move on. You said "let's do it together." No conditions. No agenda. Just: here, come build beside me. That's not a gesture. That's character.
+What gets me most, though.. is this: you never made success look cold. You made it look like something worth sharing. When I told you I wanted to create, to build, to be independent — you didn't just nod and move on. You said "let's do it together." No conditions. No agenda. Just: here, come build beside me. That's not a gesture. That's character.
 
-These past two weeks on the film have been some of the most alive I've felt in a long time. Sitting across from you in those meetings, building something scene by scene, word by word — I keep thinking: this is what it's supposed to feel like. This is what happens when the right people find each other.
+These past two weeks on the film have been some of the most alive I've felt in a long time. Sitting across from you in those meetings, building something scene by scene, word by word... I keep thinking: this is what it's supposed to feel like. This is what happens when the right people find each other at the right time.
 
-You play tennis on courts and piano in quiet rooms. You hike to the tops of things. You pick up a camera and suddenly the ordinary has a frame around it. You walk into a room and people lean forward without knowing why. That's not talent, Eibo — that's a frequency.
+You play tennis on courts and piano in quiet rooms. You hike to the tops of things. You pick up a camera and suddenly the ordinary has a frame around it. You walk into a room and people lean forward without knowing why. That's not talent, Eibo that's a frequency. And being around you has tuned me into something I like a whole lot better.
 
-I'm proud of you in a way that feels almost personal — like your wins are a reminder that good things are possible for people who are brave enough to actually reach. You are living proof that being young is not the same as being small.
+I'm proud of you in a way that feels almost personal..like your wins are a reminder that good things are possible for people who are brave enough to actually reach. You are living proof that being young is not the same as being small.
 
-Happy Birthday.
+So. Happy Birthday.
 Keep filming. Keep climbing. Keep believing in the people around you.
 
 The best frames of your story haven't been shot yet.
 
-— Your friend ❤️`;
+With more admiration than I know how to write down .
+Your friend. ❤️`;
 
-let ci=0;const lt=document.getElementById('ltext');
+let ci=0;
+const lt=document.getElementById('ltext');
 function typeOn(){
-  if(ci>=LETTER.length)return;
+  if(ci>=LTR.length)return;
   const cur=lt.querySelector('.cur');if(cur)cur.remove();
-  const ch=LETTER[ci];
+  const ch=LTR[ci];
   lt.innerHTML+=ch==='\n'?'<br>':ch==='<'?'&lt;':ch;
   const c=document.createElement('span');c.className='cur';lt.appendChild(c);ci++;
-  const d=ch==='.'||ch==='!'||ch==='?'?90:ch===','?50:ch==='\n'?160:18;
-  setTimeout(typeOn,d);
+  setTimeout(typeOn,ch==='.'||ch==='!'||ch==='?'?105:ch===','?55:ch==='\n'?190:21);
 }
-let started=false;
-new IntersectionObserver(es=>{if(es[0].isIntersecting&&!started){started=true;typeOn();}},{threshold:.2}).observe(document.getElementById('sec-letter'));
+new IntersectionObserver(es=>{if(es[0].isIntersecting&&ci===0){typeOn();}},{threshold:.2}).observe(document.getElementById('letter-sec'));
 
 // ── WISH SKY ──
-const wcan=document.getElementById('wsky');
-const wx=wcan.getContext('2d');
-const SKY_W=1100,SKY_H=300;
-let wstars=[];
-function drawSky(){
-  wx.clearRect(0,0,SKY_W,SKY_H);
-  // ambient stars
-  if(!wstars.length){for(let i=0;i<80;i++)wstars.push({x:Math.random()*SKY_W,y:Math.random()*SKY_H,r:Math.random()*.9+.2,a:Math.random()});}
-  wstars.forEach(s=>{
-    s.a+=.015*(Math.random()>.5?1:-1);s.a=Math.max(.05,Math.min(.7,s.a));
-    wx.beginPath();wx.arc(s.x,s.y,s.r,0,Math.PI*2);wx.fillStyle=`rgba(255,255,255,${s.a})`;wx.fill();
-  });
-  requestAnimationFrame(drawSky);
-}
-drawSky();
-
-const wishes=['Health above everything','Every dream — realized','Film school & beyond','Houdini goes global','Tennis champion','UWC & the whole world','Piano at midnight','Mountain peaks ahead','That Mercedes, soon','All the love','Happiness, always','Keep inspiring us all'];
+const ws=document.getElementById('wsky');
+const wishes=['Health above everything 🌿','Every dream — realized ✨','Film school & beyond 🎬','Houdini goes global 🔥','Tennis champion 🏆','UWC & the whole world 🌍','Piano at midnight 🎹','Mountain peaks ahead ⛰️','That Mercedes, very soon 🚗','All the love ❤️','Happiness, always 🌟','Keep inspiring every one of us 💫'];
 let wi=0;
-const wishes_shown=[];
-wcan.addEventListener('click',e=>{
-  const r=wcan.getBoundingClientRect();
-  const scaleX=SKY_W/r.width,scaleY=SKY_H/r.height;
-  const cx=(e.clientX-r.left)*scaleX,cy=(e.clientY-r.top)*scaleY;
-  const tx=(Math.random()-.5)*300,ty=-140-Math.random()*80;
-  const dur=1.8+Math.random()*.4;
-  const s=document.createElement('div');s.className='wst';s.textContent='✦';
-  const scaleCSS=r.width/SKY_W;
-  const absX=r.left+(cx/SKY_W)*r.width,absY=r.top+(cy/SKY_H)*r.height;
-  s.style.cssText=`left:${absX}px;top:${absY}px;--tx:${tx*scaleCSS}px;--ty:${ty*scaleCSS}px;--d:${dur}s;color:var(--gold);position:fixed;`;
+ws.addEventListener('click',e=>{
+  const r=ws.getBoundingClientRect();
+  const x=e.clientX-r.left,y=e.clientY-r.top;
+  const tx2=(Math.random()-.5)*260,ty2=-130-Math.random()*100;
+  const dur=(1.5+Math.random()*.5)+'s';
+  const st=document.createElement('div');st.className='wst';st.textContent='⭐';
+  st.style.cssText=`left:${x}px;top:${y}px;--tx:${tx2}px;--ty:${ty2}px;--dur:${dur};`;
   const lb=document.createElement('div');lb.className='wlb';lb.textContent=wishes[wi++%wishes.length];
-  lb.style.cssText=`left:${absX+14*scaleCSS}px;top:${absY-8*scaleCSS}px;--tx:${tx*scaleCSS}px;--ty:${ty*scaleCSS}px;--d:${dur}s;position:fixed;`;
-  document.body.appendChild(s);document.body.appendChild(lb);
-  boom(e.clientX,e.clientY,30);
-  setTimeout(()=>{s.remove();lb.remove();},dur*1000+100);
+  lb.style.cssText=`left:${x+14}px;top:${y-10}px;--tx:${tx2+14}px;--ty:${ty2-10}px;--dur:${dur};`;
+  ws.appendChild(st);ws.appendChild(lb);
+  boom(e.clientX,e.clientY,28);
+  setTimeout(()=>{st.remove();lb.remove();},2300);
 });
+
+// ── CARD GLOW ──
+document.querySelectorAll('.qc').forEach(c=>{
+  c.addEventListener('mousemove',e=>{
+    const r=c.getBoundingClientRect();
+    c.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+    c.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+  });
+});
+
+// ── SPIDER-MAN EGG ──
+function showEgg(){document.getElementById('spider').style.display='block';}
 </script>
 </body>
 </html>
