@@ -1,0 +1,551 @@
+125418<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Eibo — Happy Birthday</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#09090f;
+  --bg2:#0f0f1a;
+  --gold:#c9a84c;
+  --gold2:#e8c96e;
+  --line:rgba(255,255,255,.07);
+  --muted:rgba(255,255,255,.38);
+  --body:rgba(255,255,255,.72);
+  --white:#fff;
+}
+html{scroll-behavior:smooth;font-size:16px;}
+body{background:var(--bg);color:var(--body);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* CANVAS */
+#fw{position:fixed;inset:0;pointer-events:none;z-index:9999;}
+
+/* NOISE */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.6rem 3rem;display:flex;align-items:center;justify-content:space-between;}
+nav::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(9,9,15,.85),transparent);backdrop-filter:blur(0);pointer-events:none;}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:1.05rem;letter-spacing:.05em;color:var(--gold);position:relative;z-index:1;}
+.nav-links{display:flex;gap:2.2rem;position:relative;z-index:1;}
+.nav-links a{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s;}
+.nav-links a:hover{color:var(--white);}
+@media(max-width:600px){.nav-links{display:none;}}
+
+/* ── HERO ── */
+#hero{position:relative;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:8vh;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 60%,rgba(201,168,76,.09) 0%,transparent 65%);}
+.hero-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black,transparent);}
+
+.hero-tag{font-size:.72rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);opacity:0;animation:fup .9s .4s cubic-bezier(.22,1,.36,1) forwards;}
+.hero-name{font-family:'DM Serif Display',serif;font-size:clamp(5.5rem,22vw,16rem);line-height:.88;letter-spacing:-.02em;color:var(--white);opacity:0;animation:fup 1.2s .7s cubic-bezier(.22,1,.36,1) forwards;position:relative;z-index:1;}
+.hero-name span{background:linear-gradient(135deg,#c9a84c 0%,#f0d98a 45%,#c9a84c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(.95rem,2vw,1.3rem);color:var(--muted);margin-top:1rem;opacity:0;animation:fup .8s 1.4s cubic-bezier(.22,1,.36,1) forwards;letter-spacing:.04em;}
+.hero-scroll{position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--muted);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;animation:fup .8s 2.2s both;}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollpulse 2s 2.8s infinite;}
+@keyframes fup{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scrollpulse{0%,100%{transform:scaleY(1);opacity:.5}50%{transform:scaleY(1.3);opacity:1}}
+
+/* ── SHARED ── */
+.section{position:relative;z-index:1;padding:clamp(5rem,10vw,9rem) clamp(1.5rem,8vw,8rem);}
+.section-inner{max-width:1100px;margin:0 auto;}
+.label{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:block;}
+.heading{font-family:'DM Serif Display',serif;font-size:clamp(2rem,4.5vw,3.4rem);color:var(--white);line-height:1.1;letter-spacing:-.02em;}
+.heading em{font-style:italic;color:var(--gold2);}
+
+.rule{width:100%;height:1px;background:var(--line);margin:0;}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .85s ease,transform .85s ease;}
+.rv.in{opacity:1;transform:none;}
+.rv[data-d="1"]{transition-delay:.1s}
+.rv[data-d="2"]{transition-delay:.2s}
+.rv[data-d="3"]{transition-delay:.3s}
+.rv[data-d="4"]{transition-delay:.4s}
+.rv[data-d="5"]{transition-delay:.5s}
+
+/* ── COUNTDOWN ── */
+#sec-count{background:var(--bg2);}
+.count-grid{display:flex;gap:clamp(1.5rem,5vw,4rem);align-items:flex-end;margin-top:3rem;}
+.cblock{display:flex;flex-direction:column;}
+.cnum{font-family:'DM Serif Display',serif;font-size:clamp(3.8rem,10vw,7.5rem);line-height:1;color:var(--white);letter-spacing:-.04em;}
+.clbl{font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;}
+.csep{font-family:'DM Serif Display',serif;font-size:clamp(3rem,8vw,6rem);color:var(--gold);line-height:.95;padding-bottom:.2rem;opacity:.4;}
+#bday-line{display:none;}
+#bday-line .bday-txt{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,5vw,3.5rem);color:var(--white);}
+
+/* ── STORY ── */
+#sec-story{background:var(--bg);}
+.tl{margin-top:4rem;display:flex;flex-direction:column;gap:0;}
+.tl-item{display:grid;grid-template-columns:120px 1fr;gap:2.5rem;padding:2.5rem 0;border-top:1px solid var(--line);align-items:start;}
+.tl-year{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.05rem;color:var(--gold);padding-top:.15rem;}
+.tl-body{}
+.tl-title{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--white);margin-bottom:.7rem;letter-spacing:-.02em;}
+.tl-text{font-size:.88rem;line-height:1.9;color:var(--muted);}
+@media(max-width:500px){.tl-item{grid-template-columns:1fr;gap:.5rem;}.tl-year{font-size:.85rem;}}
+
+/* ── STATS ── */
+#sec-stats{background:var(--bg2);}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;margin-top:3.5rem;border:1px solid var(--line);}
+.stat{padding:2.5rem 2rem;border-right:1px solid var(--line);position:relative;overflow:hidden;}
+.stat:last-child{border-right:none;}
+.stat-num{font-family:'DM Serif Display',serif;font-size:3.2rem;color:var(--white);line-height:1;}
+.stat-num span{font-size:2rem;color:var(--gold);}
+.stat-label{font-size:.75rem;line-height:1.6;color:var(--muted);margin-top:.6rem;max-width:140px;}
+@media(max-width:700px){.stats-grid{grid-template-columns:1fr 1fr;}.stat{border-right:none;border-bottom:1px solid var(--line);}}
+
+/* ── TRAITS ── */
+#sec-traits{background:var(--bg);}
+.traits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;margin-top:3.5rem;border:1px solid var(--line);}
+.trait{padding:2.4rem 2rem;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .3s;}
+.trait:hover{background:rgba(201,168,76,.04);}
+.trait-icon{font-size:1.3rem;margin-bottom:1.2rem;display:block;}
+.trait-title{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--white);margin-bottom:.6rem;letter-spacing:-.01em;}
+.trait-text{font-size:.82rem;line-height:1.85;color:var(--muted);}
+
+/* ── PHOTOS ── */
+#sec-photos{background:var(--bg2);}
+.photo-upload{display:flex;align-items:center;gap:1.2rem;margin-top:2.5rem;flex-wrap:wrap;}
+.upload-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.7rem 1.4rem;border:1px solid rgba(201,168,76,.35);border-radius:3px;cursor:pointer;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);transition:.25s;background:none;}
+.upload-btn:hover{background:rgba(201,168,76,.07);border-color:var(--gold);}
+#phInput{display:none;}
+.photo-grid{margin-top:2rem;columns:3;gap:1rem;}
+.photo-grid .pitem{break-inside:avoid;margin-bottom:1rem;position:relative;overflow:hidden;border-radius:4px;cursor:pointer;}
+.photo-grid .pitem img{width:100%;display:block;transition:.5s;}
+.photo-grid .pitem:hover img{transform:scale(1.04);}
+.pdel{position:absolute;top:.5rem;right:.5rem;background:rgba(0,0,0,.7);border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.7rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:.2s;}
+.pitem:hover .pdel{opacity:1;}
+.ph-empty{margin-top:2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.ph-slot{aspect-ratio:3/4;background:rgba(255,255,255,.025);border:1px dashed rgba(255,255,255,.09);border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:rgba(255,255,255,.15);font-size:.75rem;}
+@media(max-width:600px){.photo-grid{columns:2;}.ph-empty{grid-template-columns:repeat(2,1fr);}}
+
+/* LIGHTBOX */
+#lbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;}
+#lbox.open{display:flex;}
+#lbox img{max-width:90vw;max-height:88vh;border-radius:4px;object-fit:contain;}
+#lbox-close{position:absolute;top:1.5rem;right:1.5rem;font-size:1.4rem;color:var(--muted);cursor:pointer;background:none;border:none;line-height:1;}
+
+/* ── LETTER ── */
+#sec-letter{background:var(--bg);}
+.letter-wrap{margin-top:3.5rem;display:grid;grid-template-columns:1fr 2fr;gap:4rem;align-items:start;}
+.letter-aside{position:sticky;top:8rem;}
+.letter-aside-title{font-family:'DM Serif Display',serif;font-style:italic;font-size:1.6rem;color:var(--white);line-height:1.3;}
+.letter-aside-sub{font-size:.78rem;color:var(--muted);margin-top:.8rem;line-height:1.7;}
+.letter-body{border-left:1px solid var(--line);padding-left:3rem;}
+#ltext{font-family:'Instrument Serif',serif;font-size:1.06rem;line-height:2.15;color:rgba(255,255,255,.78);white-space:pre-wrap;}
+.cur{display:inline-block;width:1.5px;height:1em;background:var(--gold);animation:cblink .75s infinite;vertical-align:text-bottom;margin-left:1px;}
+@keyframes cblink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:720px){.letter-wrap{grid-template-columns:1fr;}.letter-body{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:2rem;}.letter-aside{position:static;}}
+
+/* ── HOUDINI ── */
+#sec-houdini{background:var(--bg2);text-align:center;padding-top:clamp(4rem,8vw,7rem);padding-bottom:clamp(4rem,8vw,7rem);}
+.h-eyebrow{font-size:.65rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:1.2rem;}
+.h-name{font-family:'DM Serif Display',serif;font-size:clamp(3.5rem,12vw,9rem);color:var(--white);letter-spacing:.06em;line-height:.95;}
+.h-line{width:80px;height:1px;background:var(--gold);margin:2rem auto;opacity:.4;}
+.h-desc{max-width:520px;margin:0 auto;font-size:.9rem;line-height:1.9;color:var(--muted);}
+
+/* ── WISHES ── */
+#sec-wishes{background:var(--bg);}
+.sky-wrap{margin-top:2.5rem;position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--line);}
+#wsky{width:100%;height:300px;cursor:crosshair;background:radial-gradient(ellipse at 50% 0%,rgba(12,12,40,.95),var(--bg) 80%);position:relative;display:block;}
+.sky-hint{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);pointer-events:none;white-space:nowrap;}
+.wst{position:absolute;pointer-events:none;font-size:1rem;animation:wfly var(--d) ease-out forwards;}
+.wlb{position:absolute;pointer-events:none;font-size:.68rem;color:rgba(201,168,76,.9);white-space:nowrap;animation:wfly var(--d) ease-out forwards;}
+@keyframes wfly{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--tx),var(--ty))}}
+
+/* ── FINAL ── */
+#sec-final{background:var(--bg2);padding:clamp(6rem,12vw,11rem) clamp(1.5rem,8vw,8rem);}
+.final-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;}
+.final-big{font-family:'DM Serif Display',serif;font-size:clamp(3rem,9vw,7rem);line-height:.95;color:var(--white);letter-spacing:-.03em;}
+.final-big em{font-style:italic;color:var(--gold);}
+.final-text{font-family:'Instrument Serif',serif;font-style:italic;font-size:1.1rem;line-height:1.95;color:var(--muted);}
+.final-sig{margin-top:2.5rem;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:.7;}
+@media(max-width:700px){.final-inner{grid-template-columns:1fr;gap:3rem;}}
+
+/* EASTER EGG */
+.egg-trigger{display:inline-block;margin-top:3rem;font-size:.7rem;color:rgba(255,255,255,.08);cursor:default;user-select:none;}
+#egg-pop{display:none;margin-top:1rem;font-size:.82rem;color:var(--muted);font-family:'Instrument Serif',serif;font-style:italic;}
+
+/* Click ripple */
+.ripple{position:fixed;border-radius:50%;pointer-events:none;width:6px;height:6px;border:1px solid rgba(201,168,76,.6);animation:ripout .6s ease-out forwards;z-index:9998;}
+@keyframes ripout{0%{transform:scale(1);opacity:.7}100%{transform:scale(18);opacity:0}}
+</style>
+</head>
+<body>
+<canvas id="fw"></canvas>
+
+<nav>
+  <div class="nav-logo">Eibo</div>
+  <div class="nav-links">
+    <a href="#sec-story">Story</a>
+    <a href="#sec-photos">Memories</a>
+    <a href="#sec-letter">Letter</a>
+    <a href="#sec-final">Final</a>
+  </div>
+</nav>
+
+<!-- LIGHTBOX -->
+<div id="lbox"><button id="lbox-close">✕</button><img id="lbox-img" src="" alt=""></div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-dots"></div>
+  <div style="text-align:center;position:relative;z-index:2;">
+    <div class="hero-tag">A birthday tribute · Iraq's finest</div>
+    <h1 class="hero-name"><span>EIBO</span></h1>
+    <p class="hero-sub">Happy Birthday, Big Brother</p>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>scroll</span>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── COUNTDOWN ── -->
+<section id="sec-count" class="section">
+  <div class="section-inner">
+    <span class="label rv">the clock</span>
+    <h2 class="heading rv" data-d="1">Until Midnight</h2>
+    <div class="count-grid rv" data-d="2" id="timer">
+      <div class="cblock"><div class="cnum" id="th">00</div><div class="clbl">Hours</div></div>
+      <div class="csep">:</div>
+      <div class="cblock"><div class="cnum" id="tm">00</div><div class="clbl">Minutes</div></div>
+      <div class="csep">:</div>
+      <div class="cblock"><div class="cnum" id="ts">00</div><div class="clbl">Seconds</div></div>
+    </div>
+    <div id="bday-line" class="rv">
+      <p class="bday-txt">Happy Birthday, Eibo. It's finally here.</p>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── STORY ── -->
+<section id="sec-story" class="section">
+  <div class="section-inner">
+    <span class="label rv">how we got here</span>
+    <h2 class="heading rv" data-d="1">Our Story</h2>
+    <div class="tl">
+      <div class="tl-item rv" data-d="1">
+        <div class="tl-year">The beginning</div>
+        <div class="tl-body">
+          <div class="tl-title">A reel on my feed</div>
+          <p class="tl-text">You appeared on my FYP before I even knew your name. A reel. A face. Something about the way you carried yourself made me stop scrolling entirely. There are moments that feel ordinary until you look back and realize — they were everything.</p>
+        </div>
+      </div>
+      <div class="tl-item rv" data-d="2">
+        <div class="tl-year">The shared dream</div>
+        <div class="tl-body">
+          <div class="tl-title">UWC — a world worth chasing</div>
+          <p class="tl-text">We both carried the same restless desire. To go further. To see more. To build something beyond where we were born. The UWC group brought us into the same orbit — two people chasing the same star from different rooms.</p>
+        </div>
+      </div>
+      <div class="tl-item rv" data-d="3">
+        <div class="tl-year">Side by side</div>
+        <div class="tl-body">
+          <div class="tl-title">Volunteering together</div>
+          <p class="tl-text">Orphanages, churches, schools. We showed up to places where showing up actually means something. I watched how you moved through those rooms — with ease, with warmth, like you'd always belonged there. That day taught me what giving really looks like.</p>
+        </div>
+      </div>
+      <div class="tl-item rv" data-d="4">
+        <div class="tl-year">Right now</div>
+        <div class="tl-body">
+          <div class="tl-title">Making the film together</div>
+          <p class="tl-text">Two weeks of meetings, scripts, ideas thrown around, torn apart, rebuilt better. When I told you about the film you didn't just offer to help — you jumped in with both feet. This film has your fingerprints on it now. And I wouldn't have it any other way.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── STATS ── -->
+<section id="sec-stats" class="section" style="padding-top:clamp(3rem,6vw,6rem);padding-bottom:clamp(3rem,6vw,6rem);">
+  <div class="section-inner">
+    <span class="label rv">by the numbers</span>
+    <div class="stats-grid rv" data-d="1">
+      <div class="stat"><div class="stat-num">15<span>–16</span></div><div class="stat-label">Age when he reached financial independence and built his first brand</div></div>
+      <div class="stat"><div class="stat-num">1<span>st</span></div><div class="stat-label">Of his kind — the face of distinguished school students across Iraq</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">People whose lives he's changed simply by believing in them first</div></div>
+      <div class="stat"><div class="stat-num">1</div><div class="stat-label">Friend I can call a real big brother — not by blood, but by choice</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── TRAITS ── -->
+<section id="sec-traits" class="section">
+  <div class="section-inner">
+    <span class="label rv">who he is</span>
+    <h2 class="heading rv" data-d="1">The Many Sides <em>of Eibo</em></h2>
+    <div class="traits-grid rv" data-d="2">
+      <div class="trait"><span class="trait-icon">🎾</span><div class="trait-title">The Athlete</div><p class="trait-text">Professional tennis. The same discipline it takes to master a sport — the early mornings, the losses that sharpen you — is present in everything he does. He competes with himself, first.</p></div>
+      <div class="trait"><span class="trait-icon">🎬</span><div class="trait-title">The Filmmaker</div><p class="trait-text">He sees the world in frames. Give him a camera and he gives you something that makes you feel something. That's not a skill — that's a calling. Film school is just the world catching up.</p></div>
+      <div class="trait"><span class="trait-icon">🎹</span><div class="trait-title">The Pianist</div><p class="trait-text">Of course he plays piano. Every dimension of this person is built for depth. Music is how he goes somewhere no one else can follow — a private language between him and the keys.</p></div>
+      <div class="trait"><span class="trait-icon">⛰️</span><div class="trait-title">The Hiker</div><p class="trait-text">He climbs mountains — literally. There's something about earning a view with your legs that says everything about the kind of man he is. He doesn't do shortcuts. Not on trails, not in life.</p></div>
+      <div class="trait"><span class="trait-icon">🔥</span><div class="trait-title">Self-Made</div><p class="trait-text">Financial independence before most people have had their first job. He built Houdini, built a following, built a life — before he could vote. Not because he had to. Because he chose to.</p></div>
+      <div class="trait"><span class="trait-icon">❤️</span><div class="trait-title">Big Brother</div><p class="trait-text">He pulls people up. When I said I wanted to create and build, he didn't just nod — he said "let's do it together." No conditions. No agenda. Just: come build beside me. That's brotherhood.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── PHOTOS ── -->
+<section id="sec-photos" class="section">
+  <div class="section-inner">
+    <span class="label rv">our memories</span>
+    <h2 class="heading rv" data-d="1">Us, Together</h2>
+    <div class="photo-upload rv" data-d="2">
+      <label for="phInput" class="upload-btn">+ Add Photos</label>
+      <input type="file" id="phInput" accept="image/*" multiple>
+      <span style="font-size:.78rem;color:var(--muted);">Upload the moments that matter</span>
+    </div>
+    <div id="pgrid"></div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── LETTER ── -->
+<section id="sec-letter" class="section">
+  <div class="section-inner">
+    <span class="label rv">written for you</span>
+    <div class="letter-wrap">
+      <div class="letter-aside rv">
+        <p class="letter-aside-title">A letter,<br>from me<br>to you</p>
+        <p class="letter-aside-sub">Scroll to read — it writes itself as you arrive.</p>
+      </div>
+      <div class="letter-body rv" data-d="2">
+        <div id="ltext"><span class="cur"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── HOUDINI ── -->
+<section id="sec-houdini" class="section">
+  <div class="section-inner" style="text-align:center;">
+    <span class="h-eyebrow rv">the brand he built</span>
+    <div class="h-name rv" data-d="1">HOUDINI</div>
+    <div class="h-line rv" data-d="2"></div>
+    <p class="h-desc rv" data-d="3">He didn't just make hoodies. He made something students across Iraq could wear with pride — a symbol stitched in fabric, proof that distinguished means something. He built an identity before he built anything else. And he did it at sixteen.</p>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── WISHES ── -->
+<section id="sec-wishes" class="section">
+  <div class="section-inner">
+    <span class="label rv">from the heart</span>
+    <h2 class="heading rv" data-d="1">Send a Wish</h2>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:.6rem;" class="rv" data-d="2">Click inside to launch a wish into his year ahead</p>
+    <div class="sky-wrap rv" data-d="3">
+      <canvas id="wsky" width="1100" height="300"></canvas>
+      <div class="sky-hint">Click to send a wish</div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<!-- ── FINAL ── -->
+<section id="sec-final">
+  <div class="final-inner">
+    <div class="rv">
+      <div class="final-big">Happy<br>Birth<em>day,</em><br>Eibo.</div>
+      <div class="egg-trigger" onclick="document.getElementById('egg-pop').style.display='block'">🕷</div>
+      <div id="egg-pop">You found it — he'd be hyped about that new Spider-Man too. 🎬</div>
+    </div>
+    <div class="rv" data-d="2">
+      <p class="final-text">May every door you reach for swing wide open. May every frame you shoot tell exactly the story you meant. May this year be the loudest proof yet that you were right to believe — in your work, in your people, and in yourself.</p>
+      <p class="final-text" style="margin-top:1.5rem;">You are living proof that being young is not the same as being small. The best frames of your story haven't been shot yet.</p>
+      <p class="final-sig">With pride, admiration, and love — your friend ❤️</p>
+    </div>
+  </div>
+</section>
+
+<script>
+// ── FIREWORKS ──
+const fw=document.getElementById('fw');
+const fc=fw.getContext('2d');
+let FW,FH;
+const resize=()=>{fw.width=FW=innerWidth;fw.height=FH=innerHeight;};
+resize();window.addEventListener('resize',resize);
+const pts=[];
+const cols=['#c9a84c','#e8c96e','#fff','rgba(255,255,255,.6)','#f0d98a'];
+function Pt(x,y){
+  const a=Math.random()*Math.PI*2,sp=Math.random()*5+1.5;
+  this.x=x;this.y=y;this.vx=Math.cos(a)*sp;this.vy=Math.sin(a)*sp;
+  this.al=1;this.dc=Math.random()*.022+.008;this.r=Math.random()*2+.5;
+  this.col=cols[Math.floor(Math.random()*cols.length)];
+}
+function boom(x,y,n=60){for(let i=0;i<n;i++)pts.push(new Pt(x,y));}
+(function loop(){
+  fc.clearRect(0,0,FW,FH);
+  for(let i=pts.length-1;i>=0;i--){
+    const p=pts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.09;p.al-=p.dc;
+    if(p.al<=0){pts.splice(i,1);continue;}
+    fc.save();fc.globalAlpha=p.al;fc.fillStyle=p.col;
+    fc.beginPath();fc.arc(p.x,p.y,p.r,0,Math.PI*2);fc.fill();fc.restore();
+  }
+  requestAnimationFrame(loop);
+})();
+
+// Ripple + firework on click
+document.addEventListener('click',e=>{
+  if(['wsky','phInput'].includes(e.target.id)||e.target.closest('label')||e.target.closest('nav')||e.target.closest('#lbox'))return;
+  boom(e.clientX,e.clientY,55);
+  const rp=document.createElement('div');rp.className='ripple';
+  rp.style.cssText=`left:${e.clientX-3}px;top:${e.clientY-3}px;`;
+  document.body.appendChild(rp);setTimeout(()=>rp.remove(),650);
+});
+
+// ── COUNTDOWN ──
+function tick(){
+  const now=new Date(),start=new Date(now);
+  start.setHours(0,0,0,0);
+  const elapsed=now-start;
+  if(elapsed<90000){
+    document.getElementById('timer').style.display='none';
+    document.getElementById('bday-line').style.display='block';
+    for(let i=0;i<10;i++)setTimeout(()=>boom(Math.random()*FW,Math.random()*FH*.5,100),i*400);
+    return;
+  }
+  const next=new Date(start);next.setDate(next.getDate()+1);
+  const r=next-now;
+  document.getElementById('th').textContent=String(Math.floor(r/3600000)).padStart(2,'0');
+  document.getElementById('tm').textContent=String(Math.floor(r%3600000/60000)).padStart(2,'0');
+  document.getElementById('ts').textContent=String(Math.floor(r%60000/1000)).padStart(2,'0');
+}
+setInterval(tick,1000);tick();
+
+// ── SCROLL REVEAL ──
+const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>observer.observe(el));
+
+// ── PHOTOS ──
+const phin=document.getElementById('phInput');
+const pg=document.getElementById('pgrid');
+const lbox=document.getElementById('lbox');
+const lboxImg=document.getElementById('lbox-img');
+const lboxClose=document.getElementById('lbox-close');
+let photos=[];
+phin.addEventListener('change',e=>{
+  [...e.target.files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{photos.push(ev.target.result);renderPh();};
+    r.readAsDataURL(f);
+  });phin.value='';
+});
+lboxClose.addEventListener('click',()=>lbox.classList.remove('open'));
+lbox.addEventListener('click',e=>{if(e.target===lbox)lbox.classList.remove('open');});
+
+function renderPh(){
+  pg.innerHTML='';
+  if(!photos.length){
+    const empty=document.createElement('div');empty.className='ph-empty';
+    for(let i=0;i<3;i++){const s=document.createElement('div');s.className='ph-slot';s.innerHTML='<span style="font-size:1.2rem;opacity:.3">📷</span><span>Add a memory</span>';empty.appendChild(s);}
+    pg.appendChild(empty);return;
+  }
+  const grid=document.createElement('div');grid.className='photo-grid';
+  photos.forEach((src,i)=>{
+    const item=document.createElement('div');item.className='pitem';
+    const img=document.createElement('img');img.src=src;img.alt='Memory';
+    img.addEventListener('click',()=>{lboxImg.src=src;lbox.classList.add('open');});
+    const del=document.createElement('button');del.className='pdel';del.textContent='✕';
+    del.addEventListener('click',e=>{e.stopPropagation();photos.splice(i,1);renderPh();});
+    item.appendChild(img);item.appendChild(del);grid.appendChild(item);
+  });
+  pg.appendChild(grid);
+}
+renderPh();
+
+// ── TYPED LETTER ──
+const LETTER=`Dear Eibo,
+
+There's a version of my life where I never stopped on that reel. Where I kept scrolling, and you stayed a stranger, and none of this happened. I think about that version sometimes — and I feel genuinely sorry for it.
+
+Because knowing you, even for this stretch of time, has been one of those quiet gifts that doesn't announce itself until you look back and realize: that changed something in me.
+
+You were fifteen, maybe sixteen — and you had already built something real. Not just a brand, not just a following — but a reputation held up by actual substance. Houdini wasn't just hoodies. It was proof. Proof that when you move with intention and with belief, the world starts to make room for you. While others your age were still figuring out the question, you had already moved on to the answer.
+
+What gets me most, though — is this: you never made success look cold. You made it look like something worth sharing. When I told you I wanted to create, to build, to be independent — you didn't just nod and move on. You said "let's do it together." No conditions. No agenda. Just: here, come build beside me. That's not a gesture. That's character.
+
+These past two weeks on the film have been some of the most alive I've felt in a long time. Sitting across from you in those meetings, building something scene by scene, word by word — I keep thinking: this is what it's supposed to feel like. This is what happens when the right people find each other.
+
+You play tennis on courts and piano in quiet rooms. You hike to the tops of things. You pick up a camera and suddenly the ordinary has a frame around it. You walk into a room and people lean forward without knowing why. That's not talent, Eibo — that's a frequency.
+
+I'm proud of you in a way that feels almost personal — like your wins are a reminder that good things are possible for people who are brave enough to actually reach. You are living proof that being young is not the same as being small.
+
+Happy Birthday.
+Keep filming. Keep climbing. Keep believing in the people around you.
+
+The best frames of your story haven't been shot yet.
+
+— Your friend ❤️`;
+
+let ci=0;const lt=document.getElementById('ltext');
+function typeOn(){
+  if(ci>=LETTER.length)return;
+  const cur=lt.querySelector('.cur');if(cur)cur.remove();
+  const ch=LETTER[ci];
+  lt.innerHTML+=ch==='\n'?'<br>':ch==='<'?'&lt;':ch;
+  const c=document.createElement('span');c.className='cur';lt.appendChild(c);ci++;
+  const d=ch==='.'||ch==='!'||ch==='?'?90:ch===','?50:ch==='\n'?160:18;
+  setTimeout(typeOn,d);
+}
+let started=false;
+new IntersectionObserver(es=>{if(es[0].isIntersecting&&!started){started=true;typeOn();}},{threshold:.2}).observe(document.getElementById('sec-letter'));
+
+// ── WISH SKY ──
+const wcan=document.getElementById('wsky');
+const wx=wcan.getContext('2d');
+const SKY_W=1100,SKY_H=300;
+let wstars=[];
+function drawSky(){
+  wx.clearRect(0,0,SKY_W,SKY_H);
+  // ambient stars
+  if(!wstars.length){for(let i=0;i<80;i++)wstars.push({x:Math.random()*SKY_W,y:Math.random()*SKY_H,r:Math.random()*.9+.2,a:Math.random()});}
+  wstars.forEach(s=>{
+    s.a+=.015*(Math.random()>.5?1:-1);s.a=Math.max(.05,Math.min(.7,s.a));
+    wx.beginPath();wx.arc(s.x,s.y,s.r,0,Math.PI*2);wx.fillStyle=`rgba(255,255,255,${s.a})`;wx.fill();
+  });
+  requestAnimationFrame(drawSky);
+}
+drawSky();
+
+const wishes=['Health above everything','Every dream — realized','Film school & beyond','Houdini goes global','Tennis champion','UWC & the whole world','Piano at midnight','Mountain peaks ahead','That Mercedes, soon','All the love','Happiness, always','Keep inspiring us all'];
+let wi=0;
+const wishes_shown=[];
+wcan.addEventListener('click',e=>{
+  const r=wcan.getBoundingClientRect();
+  const scaleX=SKY_W/r.width,scaleY=SKY_H/r.height;
+  const cx=(e.clientX-r.left)*scaleX,cy=(e.clientY-r.top)*scaleY;
+  const tx=(Math.random()-.5)*300,ty=-140-Math.random()*80;
+  const dur=1.8+Math.random()*.4;
+  const s=document.createElement('div');s.className='wst';s.textContent='✦';
+  const scaleCSS=r.width/SKY_W;
+  const absX=r.left+(cx/SKY_W)*r.width,absY=r.top+(cy/SKY_H)*r.height;
+  s.style.cssText=`left:${absX}px;top:${absY}px;--tx:${tx*scaleCSS}px;--ty:${ty*scaleCSS}px;--d:${dur}s;color:var(--gold);position:fixed;`;
+  const lb=document.createElement('div');lb.className='wlb';lb.textContent=wishes[wi++%wishes.length];
+  lb.style.cssText=`left:${absX+14*scaleCSS}px;top:${absY-8*scaleCSS}px;--tx:${tx*scaleCSS}px;--ty:${ty*scaleCSS}px;--d:${dur}s;position:fixed;`;
+  document.body.appendChild(s);document.body.appendChild(lb);
+  boom(e.clientX,e.clientY,30);
+  setTimeout(()=>{s.remove();lb.remove();},dur*1000+100);
+});
+</script>
+</body>
+</html>
